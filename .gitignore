@@ -14,5 +14,4 @@ staticfiles/
 media/*
 !media/.gitkeep
 
-.vscode
 /.vs
