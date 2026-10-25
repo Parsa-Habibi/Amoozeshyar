@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.pyc
+venv/
+.venv/
+
+# Environment
+.env
+.env.example
+
+# Django
+db.sqlite3
+staticfiles/
+media/*
+!media/.gitkeep
+
+.vscode
+/.vs
