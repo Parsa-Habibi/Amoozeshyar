@@ -49,7 +49,33 @@ class ParkingPasses(models.Model):
 
 # نقش
 class Role(models.Model):
-    pass
+    
+    # شناسه یکتا 
+     role_id = models.AutoField(primary_key=True, verbose_name="شناسه نقش")
+    
+    # نام نقش (مثلاً: مدیر سیستم، استاد، دانشجو)
+role_name = models.CharField(max_length=100, unique=True, verbose_name="نام نقش")
+    
+    # کد نقش (برای استفاده در سیستم؛ مثلاً ADMIN, TEACHER, STUDENT)
+role_code = models.CharField(max_length=50, unique=True, verbose_name="کد نقش")
+    
+    # توضیحات (اختیاری)
+description = models.TextField(blank=True, null=True, verbose_name="توضیحات")
+    
+    # وضعیت (آیا این نقش در حال حاضر فعال است؟)
+is_active = models.BooleanField(default=True, verbose_name="وضعیت فعال بودن")
+    
+    # تاریخ ایجاد (به صورت خودکار زمان ثبت را ذخیره می‌کند)
+created_at = models.DateTimeField(auto_now_add=True, verbose_name="تاریخ ایجاد")
+
+def __str__(self):
+        return self.role_name
+
+class Meta:
+        # برای اینکه در پنل ادمین اسمش به فارسی نمایش داده شود
+        verbose_name = "نقش"
+        verbose_name_plural = "نقش‌ها"
+    
 
 
 # حساب کاربری
@@ -74,7 +100,35 @@ class Field(models.Model):
 
 # پیش‌نیاز/هم‌نیاز
 class Prerequisite(models.Model):
-    pass
+    
+    # 1. درس اصلی که دانشجو می‌خواد برداره (مثلاً ریاضی ۲)
+    lesson = models.ForeignKey(
+        Lesson, 
+        on_delete=models.CASCADE, 
+        related_name='prerequisites', 
+        verbose_name="درس اصلی"
+    )
+    
+    # 2. درسی که باید از قبل پاس شده باشه (مثلاً ریاضی ۱)
+    prerequisite_lesson = models.ForeignKey(
+        Lesson, 
+        on_delete=models.CASCADE, 
+        related_name='is_prerequisite_for', 
+        verbose_name="درس پیش‌نیاز"
+    )
+    
+    # 3. آیا دانشجو باید حتماً نمره قبولی (حداقل ۱۰) آورده باشه؟ (پیش‌فرض بله)
+    is_mandatory = models.BooleanField(default=True, verbose_name="اجباری بودن")
+
+    def __str__(self):
+        return f"{self.prerequisite_lesson} پیش‌نیاز برای {self.lesson}"
+
+    class Meta:
+        verbose_name = "پیش‌نیاز"
+        verbose_name_plural = "پیش‌نیازها"
+        # این خط خیلی مهمه: جلوی ثبت تکراری رو می‌گیره (مثلاً نمی‌شه دو بار گفت ریاضی ۱ پیش‌نیاز ریاضی ۲ است)
+        unique_together = ('lesson', 'prerequisite_lesson')
+    
 
 
 # کلاس/مکان
@@ -94,7 +148,60 @@ class CourseOffering(models.Model):
 
 # انتخاب واحد
 class Enrollment(models.Model):
-    pass
+    
+    # تعریف گزینه‌های ثابت برای وضعیت درس (برای اینکه دیتای اشتباه ثبت نشه)
+    STATUS_CHOICES = (
+        ('REGISTERED', 'در حال تحصیل (ثبت‌نام شده)'),
+        ('PASSED', 'پاس شده'),
+        ('FAILED', 'افتاده'),
+        ('DROPPED', 'حذف شده'),
+    )
+
+    # 1. اتصال به جدول دانشجو
+    student = models.ForeignKey(
+        'Student', 
+        on_delete=models.CASCADE, 
+        related_name='enrollments', 
+        verbose_name="دانشجو"
+    )
+    
+    # 2. اتصال به جدول درس
+    lesson = models.ForeignKey(
+        Lesson, 
+        on_delete=models.CASCADE, 
+        related_name='enrollments', 
+        verbose_name="درس"
+    )
+    
+    # 3. ترم تحصیلی (مثلاً 14031 یا 14032)
+    semester = models.CharField(max_length=20, verbose_name="ترم تحصیلی")
+    
+    # 4. نوع ثبت‌نام (از روی عکسی که فرستادی - مثلاً با آزمون، بدون آزمون)
+    enrollment_type = models.CharField(max_length=50, verbose_name="نوع ثبت‌نام")
+    
+    # 5. وضعیت درس در آن ترم
+    status = models.CharField(
+        max_length=20, 
+        choices=STATUS_CHOICES, 
+        default='REGISTERED', 
+        verbose_name="وضعیت"
+    )
+    
+    # 6. تاریخ ثبت‌نام (خودکار پر میشه)
+    enrollment_date = models.DateTimeField(auto_now_add=True, verbose_name="تاریخ ثبت‌نام")
+    
+    # 7. تاریخ حذف (اگر درس رو حذف کرد)
+    drop_date = models.DateField(null=True, blank=True, verbose_name="تاریخ حذف")
+
+    def __str__(self):
+        return f"{self.student} - {self.lesson} ({self.semester})"
+
+    class Meta:
+        verbose_name = "انتخاب واحد"
+        verbose_name_plural = "انتخاب واحدها"
+        # نکته طلایی: یک دانشجو توی یک ترم نمی‌تونه یک درس رو دو بار انتخاب کنه!
+        unique_together = ('student', 'lesson', 'semester')
+    
 
 
 # نمره
