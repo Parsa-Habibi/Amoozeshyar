@@ -296,17 +296,146 @@ class StudentServiceRequest(models.Model):
 
 # درخواست بورسیه
 class ScholarshipApplication(models.Model):
-    pass
+    SCHOLARSHIP_STATUS_CHOICES = [
+        ("pending", "در انتظار بررسی"),
+        ("approved", "تأیید شده"),
+        ("rejected", "رد شده"),
+    ]
+
+    scholarship_application_key = models.AutoField(
+        primary_key=True,
+        db_column="ScholarshipApplicationKey"
+    )
+
+    scholarship_applicant = models.ForeignKey(
+        "core.Student",
+        on_delete=models.PROTECT,
+        related_name="scholarship_applications",
+        db_column="ScholarshipApplicantLinkId"
+    )
+
+    scholarship_type = models.CharField(
+        max_length=50,
+        db_column="ScholarshipType"
+    )
+
+    scholarship_reason = models.TextField(
+        db_column="ScholarshipReason"
+    )
+
+    scholarship_status = models.CharField(
+        max_length=20,
+        choices=SCHOLARSHIP_STATUS_CHOICES,
+        default="pending",
+        db_column="ScholarshipStatus"
+    )
+
+    scholarship_submitted_at = models.DateTimeField(
+        auto_now_add=True,
+        db_column="ScholarshipSubmittedAt"
+    )
+
+    class Meta:
+        db_table = "ScholarshipApplication"
+
+    def __str__(self):
+        return f"درخواست بورسیه {self.scholarship_application_key}"
 
 
 # جلسات مشاوره
 class CounselingAppointment(models.Model):
-    pass
+    SCHOLARSHIP_STATUS_CHOICES = [
+        ("pending", "در انتظار بررسی"),
+        ("approved", "تأیید شده"),
+        ("rejected", "رد شده"),
+    ]
+
+    scholarship_application_key = models.AutoField(
+        primary_key=True,
+        db_column="ScholarshipApplicationKey"
+    )
+
+    scholarship_applicant = models.ForeignKey(
+        "core.Student",
+        on_delete=models.PROTECT,
+        related_name="scholarship_applications",
+        db_column="ScholarshipApplicantLinkId"
+    )
+
+    scholarship_type = models.CharField(
+        max_length=50,
+        db_column="ScholarshipType"
+    )
+
+    scholarship_reason = models.TextField(
+        db_column="ScholarshipReason"
+    )
+
+    scholarship_status = models.CharField(
+        max_length=20,
+        choices=SCHOLARSHIP_STATUS_CHOICES,
+        default="pending",
+        db_column="ScholarshipStatus"
+    )
+
+    scholarship_submitted_at = models.DateTimeField(
+        auto_now_add=True,
+        db_column="ScholarshipSubmittedAt"
+    )
+
+    class Meta:
+        db_table = "ScholarshipApplication"
+
+    def __str__(self):
+        return f"درخواست بورسیه {self.scholarship_application_key}"
 
 
 # پروپوزال
 class Proposal(models.Model):
-    pass
+    PROPOSAL_STATUS_CHOICES = [
+        ("pending", "در انتظار بررسی"),
+        ("approved", "تأیید شده"),
+        ("rejected", "رد شده"),
+    ]
+
+    proposal_case_key = models.AutoField(
+        primary_key=True,
+        db_column="ProposalCaseKey"
+    )
+
+    proposal_student_link = models.ForeignKey(
+        "core.Student",
+        on_delete=models.PROTECT,
+        related_name="proposals",
+        db_column="ProposalStudentLinkId"
+    )
+
+    proposal_title = models.CharField(
+        max_length=255,
+        db_column="ProposalTitle"
+    )
+
+    proposal_description = models.TextField(
+        db_column="ProposalDescription"
+    )
+
+    proposal_submitted_at = models.DateTimeField(
+        auto_now_add=True,
+        db_column="ProposalSubmittedAt"
+    )
+
+    proposal_status = models.CharField(
+        max_length=20,
+        choices=PROPOSAL_STATUS_CHOICES,
+        default="pending",
+        db_column="ProposalStatus"
+    )
+
+    class Meta:
+        db_table = "Proposal"
+
+    def __str__(self):
+        return self.proposal_title
 
 class Attendance(models.Model):
     pass
