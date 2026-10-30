@@ -34,7 +34,16 @@ class Payment(models.Model):
 
 # امتحان
 class Exam(models.Model):
-    pass
+    offering = models.ForeignKey('CourseOffering', on_delete=models.CASCADE)
+    exam_date = models.DateField()
+    exam_type = models.CharField(
+        max_length=20,
+        choices=[
+            ('midterm', 'میان‌ترم'),
+            ('final', 'پایان‌ترم'),
+            ('virtual', 'مجازی'),
+        ],
+    )
 
 
 # گروه کلاسی
@@ -79,7 +88,10 @@ class Prerequisite(models.Model):
 
 # کلاس/مکان
 class Classroom(models.Model):
-    pass
+    building_name = models.TextField()
+    room_number = models.TextField()
+    capacity = models.IntegerField()
+    classroom_type = models.TextField()
 
 
 # اعضای گروه کلاسی
@@ -104,7 +116,17 @@ class Grade(models.Model):
 
 # اعتراض به نمره
 class GradeAppeal(models.Model):
-    pass
+    enrollment = models.ForeignKey('Enrollment', on_delete=models.CASCADE)
+    appeal_reason = models.TextField()
+    appeal_date = models.DateTimeField()
+    appeal_status = models.CharField(
+        max_length=30,
+        choices=[
+            ('pending', 'در انتظار بررسی'),
+            ('approved', 'تأیید'),
+            ('rejected', 'رد'),
+        ],
+    )
 
 
 # حضور و غیاب
