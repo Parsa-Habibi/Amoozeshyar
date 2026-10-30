@@ -308,3 +308,14 @@ class CounselingAppointment(models.Model):
 class Proposal(models.Model):
     pass
 
+class Attendance(models.Model):
+    pass
+
+
+class UserAccount(models.Model):
+    pass
+
+
+class Department(models.Model):
+    pass
+
