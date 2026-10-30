@@ -114,7 +114,15 @@ class Attendance(models.Model):
 
 # تیکت
 class Ticket(models.Model):
-    pass
+    creator_person_id = models.ForeignKey('Person', on_delete=models.CASCADE, related_name='created_tickets')
+    creator_role = models.CharField(max_length=20)
+    category_id = models.ForeignKey('TicketCategory', on_delete=models.CASCADE)
+    subject = models.CharField(max_length=200)
+    content = models.TextField()
+    status = models.CharField(max_length=20)
+    assigned_to_person_id = models.ForeignKey('Person', on_delete=models.CASCADE, related_name='assigned_tickets')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
 
 # دسته بندی تیکت ها
@@ -124,7 +132,12 @@ class TicketCategory(models.Model):
 
 # برگزاری کلاس مجازی
 class OnlineClass(models.Model):
-    pass
+    teacher_id = models.ForeignKey('Teacher', on_delete=models.CASCADE)
+    offering_id = models.ForeignKey('CourseOffering', on_delete=models.CASCADE)
+    start_at = models.DateTimeField()
+    end_at = models.DateTimeField()
+    title = models.CharField(max_length=200)
+    meeting_link = models.URLField()
 
 
 # رسید شهریه
@@ -308,14 +321,4 @@ class CounselingAppointment(models.Model):
 class Proposal(models.Model):
     pass
 
-class Attendance(models.Model):
-    pass
-
-
-class UserAccount(models.Model):
-    pass
-
-
-class Department(models.Model):
-    pass
 
