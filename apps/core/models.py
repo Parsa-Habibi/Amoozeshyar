@@ -19,7 +19,7 @@ class Person(AbstractUser):
 
 # استاد
 class Teacher(models.Model):
-    teacher_id = models.BigAutoField(primary_key=True)
+    id = models.BigAutoField(primary_key=True)
     person = models.OneToOneField(
         Person, on_delete=models.CASCADE, related_name="teacher"
     )
@@ -49,7 +49,7 @@ class Lesson(models.Model):
 
 # ترم
 class Term(models.Model):
-    term_id = models.BigAutoField(primary_key=True)
+    id = models.BigAutoField(primary_key=True)
     term_code = models.CharField(max_length=20, unique=True)
     semester = models.CharField(max_length=20)
     academic_year = models.CharField(max_length=20)
