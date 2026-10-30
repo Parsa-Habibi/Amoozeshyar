@@ -4,27 +4,64 @@ from django.contrib.auth.models import AbstractUser
 
 # شخص (جایگزین User پیش‌فرض جنگو)
 class Person(AbstractUser):
-    pass
+    gender = models.CharField(
+        max_length=1,
+        choices=[
+            ("F", "Female"),
+            ("M", "Male"),
+        ],
+    )
+    address = models.TextField()
+    email = models.EmailField(unique=True)
+    father_name = models.CharField(max_length=100)
+    birth_place = models.CharField(max_length=100)
 
 
 # استاد
-class Teacher(Person):
-    pass
+class Teacher(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    person = models.OneToOneField(
+        Person, on_delete=models.CASCADE, related_name="teacher"
+    )
+    teacher_code = models.CharField(max_length=20, unique=True)
+    department = models.ForeignKey("Department", on_delete=models.PROTECT)
+    academic_rank = models.CharField(max_length=100)
+    hire_date = models.DateField()
 
 
 # دانشجو
-class Student(Person):
-    pass
+class Student(models.Model):
+    person = models.OneToOneField(
+        Person, on_delete=models.CASCADE, related_name="student"
+    )
+    admission_type = models.CharField(max_length=100)
+    previous_term_gpa = models.DecimalField(max_digits=4, decimal_places=2)
+    total_gpa = models.DecimalField(max_digits=4, decimal_places=2)
+    passed_units = models.IntegerField()
+    tuition_debt = models.DecimalField(max_digits=12, decimal_places=2)
 
 
 # درس
 class Lesson(models.Model):
+
     pass
 
 
 # ترم
 class Term(models.Model):
-    pass
+    id = models.BigAutoField(primary_key=True)
+    term_code = models.CharField(max_length=20, unique=True)
+    semester = models.CharField(max_length=20)
+    academic_year = models.CharField(max_length=20)
+    start_date = models.DateField()
+    end_date = models.DateField()
+    registration_start = models.DateTimeField()
+    registration_end = models.DateTimeField()
+    add_drop_start = models.DateTimeField()
+    add_drop_end = models.DateTimeField()
+    emergency_drop_start = models.DateTimeField()
+    emergency_drop_end = models.DateTimeField()
+    is_active = models.BooleanField(default=False)
 
 
 # پرداخت
