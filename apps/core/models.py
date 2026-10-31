@@ -53,78 +53,79 @@ class Role(models.Model):
 
 
 # حساب کاربری
-class UserAccount(models.Model):
+class UserAccount(models.Model):  # مدل حساب کاربری؛ Django از آن جدول پایگاه داده می‌سازد
+
     user_id = models.AutoField(
-        primary_key=True,
-        verbose_name='شناسه حساب کاربری'
+        primary_key=True,  # شناسهٔ اصلی و یکتای هر حساب؛ خودکار افزایش می‌یابد
+        verbose_name='شناسه حساب کاربری'  # نام قابل‌نمایش فیلد در پنل مدیریت
     )
 
     person = models.ForeignKey(
-        'Person',
-        on_delete=models.CASCADE,
-        related_name='user_accounts',
+        'Person',  # هر حساب به یک شخص از مدل Person متصل است
+        on_delete=models.CASCADE,  # با حذف شخص، حساب او هم حذف می‌شود
+        related_name='user_accounts',  # دسترسی از شخص به حساب‌هایش: person.user_accounts
         verbose_name='شخص'
     )
 
     role = models.ForeignKey(
-        'Role',
-        on_delete=models.PROTECT,
-        related_name='user_accounts',
+        'Role',  # نقش این حساب را مشخص می‌کند؛ مثلاً دانشجو یا مدیر
+        on_delete=models.PROTECT,  # تا وقتی حسابی از این نقش استفاده می‌کند، حذف نقش ممنوع است
+        related_name='user_accounts',  # دسترسی از نقش به حساب‌های دارای آن نقش
         verbose_name='نقش'
     )
 
     username = models.CharField(
-        max_length=150,
-        unique=True,
+        max_length=150,  # حداکثر طول نام کاربری
+        unique=True,  # هر نام کاربری باید یکتا باشد
         verbose_name='نام کاربری'
     )
 
     password = models.CharField(
-        max_length=128,
+        max_length=128,  # طول فیلد ذخیرهٔ رمز هش‌شده
         verbose_name='رمز عبور'
     )
 
     created_at = models.DateTimeField(
-        auto_now_add=True,
+        auto_now_add=True,  # زمان ایجاد حساب را خودکار ذخیره می‌کند
         verbose_name='تاریخ ثبت'
     )
 
     is_active = models.BooleanField(
-        default=True,
+        default=True,  # حساب به‌صورت پیش‌فرض فعال است
         verbose_name='فعال'
     )
 
     failed_login_count = models.PositiveIntegerField(
-        default=0,
+        default=0,  # تعداد تلاش‌های ناموفق؛ عدد منفی نمی‌پذیرد
         verbose_name='تعداد تلاش ناموفق'
     )
 
     locked_until = models.DateTimeField(
-        null=True,
-        blank=True,
+        null=True,  # در دیتابیس می‌تواند خالی باشد
+        blank=True,  # در فرم‌های Django هم اختیاری است
         verbose_name='قفل تا'
     )
 
     last_login_at = models.DateTimeField(
-        null=True,
+        null=True,  # ممکن است کاربر هنوز وارد نشده باشد
         blank=True,
         verbose_name='آخرین ورود'
     )
 
     last_activity_at = models.DateTimeField(
-        null=True,
+        null=True,  # ممکن است هنوز فعالیتی ثبت نشده باشد
         blank=True,
         verbose_name='آخرین فعالیت'
     )
 
     password_changed_at = models.DateTimeField(
-        null=True,
+        null=True,  # ممکن است زمان تغییر رمز هنوز ثبت نشده باشد
         blank=True,
         verbose_name='تاریخ تغییر رمز'
     )
 
     def __str__(self):
-        return self.username
+        return self.username  # هنگام نمایش حساب، نام کاربری را نشان می‌دهد
 
 
 # دانشکده
