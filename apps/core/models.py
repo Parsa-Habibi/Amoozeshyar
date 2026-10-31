@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.db.models.fields.related import _OnDeleteOptions
 
 
 # شخص (جایگزین User پیش‌فرض جنگو)
@@ -16,6 +17,8 @@ class Person(AbstractUser):
     father_name = models.CharField(max_length=100)
     birth_place = models.CharField(max_length=100)
 
+    national_id = models.CharField(max_length = 15)
+
 
 # استاد
 class Teacher(models.Model):
@@ -31,6 +34,8 @@ class Teacher(models.Model):
 
 # دانشجو
 class Student(models.Model):
+    id = models.BigAutoField(primary_key = True)
+
     person = models.OneToOneField(
         Person, on_delete=models.CASCADE, related_name="student"
     )
@@ -39,6 +44,25 @@ class Student(models.Model):
     total_gpa = models.DecimalField(max_digits=4, decimal_places=2)
     passed_units = models.IntegerField()
     tuition_debt = models.DecimalField(max_digits=12, decimal_places=2)
+
+    student_code = models.CharField(max_length = 20)
+
+    educational_level = models.CharField(max_length = 30)
+
+    application_date = models.DateField(auto_now_add = True)
+
+    # student_info = models.OneToOneField(
+    #     Person,
+    #     on_delete = models.CASCADE,
+    #     related_name = "education_info"
+    # )
+
+    # field = models.ForeignKey(
+    #     Field,
+    #     on_delete = models.SET_DEFAULT,
+    #     related_name = "students"
+    # )
+
 
 
 # درس
@@ -85,12 +109,48 @@ class Exam(models.Model):
 
 # گروه کلاسی
 class LessonGroups(models.Model):
-    pass
+    id = models.BigIntegerField(primary_key = True)
 
+    name = models.CharField(max_length = 50)
+
+    created_at = models.DateTimeField(auto_now_add = True)
+
+    created_by = models.ForeignKey(
+        Person,
+        on_delete = models.CASCADE,
+        related_name = "lesson_groups"
+    )
+
+    members = models.ManyToManyField(
+        Person,
+        related_name = "lesson_groups"
+    )
+
+    teacher = models.ForeignKey(
+        Teacher,
+        on_delete = models.DO_NOTHING,
+        related_name = "lesson_groups"
+    )
+
+    is_active = models.BooleanField(default = True)
 
 # مجوزهای پارکینگ
 class ParkingPasses(models.Model):
-    pass
+    id = models.BigAutoField(primary_key = True)
+
+    parking_pass_code = models.CharField(max_length = 50)
+
+    aquisition_date = models.DateField(auto_now_add = True)
+
+    expiration_date = models.DateField
+
+    charge = models.BigIntegerField
+
+    owner = models.OneToOneField(
+        Person,
+        on_delete = models.CASCADE,
+        related_name = "parking_pass"
+    )
 
 
 # نقش
