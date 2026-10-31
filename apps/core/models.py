@@ -179,21 +179,29 @@ class GradeAppeal(models.Model):
 
 
 # حضور و غیاب
-class Attendance(models.Model):
-    enrollment = models.ForeignKey(
-        'Enrollment',
-        on_delete=models.CASCADE
+class Attendance(models.Model):  # مدل ثبت اطلاعات حضور و غیاب
+
+    enrollment = models.ForeignKey(  # ارتباط این رکورد با ثبت‌نام هنرجو
+        'Enrollment',  # نام مدل ثبت‌نام
+        on_delete=models.CASCADE  # با حذف ثبت‌نام، رکورد حضور و غیاب هم حذف می‌شود
     )
-    session_number = models.IntegerField()
-    session_date = models.DateField()
-    attendance_status = models.CharField(max_length=50)
-    attendance_time = models.TimeField()
-    description = models.TextField()
-    recorded_by = models.ForeignKey(
-        'UserAccount',
-        on_delete=models.CASCADE
+
+    session_number = models.IntegerField()  # شمارهٔ جلسه
+
+    session_date = models.DateField()  # تاریخ برگزاری جلسه
+
+    attendance_status = models.CharField(max_length=50)  # وضعیت حضور، مثل حاضر یا غایب
+
+    attendance_time = models.TimeField()  # ساعت حضور یا ثبت وضعیت
+
+    description = models.TextField()  # توضیحات تکمیلی
+
+    recorded_by = models.ForeignKey(  # ارتباط با حساب کاربری ثبت‌کننده
+        'UserAccount',  # نام مدل حساب کاربری
+        on_delete=models.CASCADE  # با حذف حساب کاربری، این رکورد هم حذف می‌شود
     )
-    created_at = models.DateTimeField(auto_now_add=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)  # زمان ایجاد رکورد که خودکار ثبت می‌شود
 
 
 # تیکت
