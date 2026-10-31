@@ -362,6 +362,13 @@ class CounselingAppointment(models.Model):
         db_column="CounselingStudentLinkId"
     )
 
+    counseling_teacher_link = models.ForeignKey(
+        "core.Teacher",
+        on_delete=models.PROTECT,
+        related_name="counseling_appointments",
+        db_column="CounselingTeacherLinkId"
+    )
+
     counseling_date = models.DateTimeField(
         db_column="CounselingDate"
     )
@@ -388,7 +395,6 @@ class CounselingAppointment(models.Model):
 
     def __str__(self):
         return f"جلسه مشاوره {self.counseling_appointment_key}"
-
 
 # پروپوزال
 class Proposal(models.Model):
