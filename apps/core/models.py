@@ -54,7 +54,77 @@ class Role(models.Model):
 
 # حساب کاربری
 class UserAccount(models.Model):
-    pass
+    user_id = models.AutoField(
+        primary_key=True,
+        verbose_name='شناسه حساب کاربری'
+    )
+
+    person = models.ForeignKey(
+        'Person',
+        on_delete=models.CASCADE,
+        related_name='user_accounts',
+        verbose_name='شخص'
+    )
+
+    role = models.ForeignKey(
+        'Role',
+        on_delete=models.PROTECT,
+        related_name='user_accounts',
+        verbose_name='نقش'
+    )
+
+    username = models.CharField(
+        max_length=150,
+        unique=True,
+        verbose_name='نام کاربری'
+    )
+
+    password = models.CharField(
+        max_length=128,
+        verbose_name='رمز عبور'
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name='تاریخ ثبت'
+    )
+
+    is_active = models.BooleanField(
+        default=True,
+        verbose_name='فعال'
+    )
+
+    failed_login_count = models.PositiveIntegerField(
+        default=0,
+        verbose_name='تعداد تلاش ناموفق'
+    )
+
+    locked_until = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name='قفل تا'
+    )
+
+    last_login_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name='آخرین ورود'
+    )
+
+    last_activity_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name='آخرین فعالیت'
+    )
+
+    password_changed_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name='تاریخ تغییر رمز'
+    )
+
+    def __str__(self):
+        return self.username
 
 
 # دانشکده
@@ -109,7 +179,20 @@ class GradeAppeal(models.Model):
 
 # حضور و غیاب
 class Attendance(models.Model):
-    pass
+    enrollment = models.ForeignKey(
+        'Enrollment',
+        on_delete=models.CASCADE
+    )
+    session_number = models.IntegerField()
+    session_date = models.DateField()
+    attendance_status = models.CharField(max_length=50)
+    attendance_time = models.TimeField()
+    description = models.TextField()
+    recorded_by = models.ForeignKey(
+        'UserAccount',
+        on_delete=models.CASCADE
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
 
 
 # تیکت
