@@ -185,8 +185,79 @@ class Meta:
 
 
 # حساب کاربری
-class UserAccount(models.Model):
-    pass
+class UserAccount(models.Model):  # مدل حساب کاربری؛ Django از آن جدول پایگاه داده می‌سازد
+
+    user_id = models.AutoField(
+        primary_key=True,  # شناسهٔ اصلی و یکتای هر حساب؛ خودکار افزایش می‌یابد
+        verbose_name='شناسه حساب کاربری'  # نام قابل‌نمایش فیلد در پنل مدیریت
+    )
+
+    person = models.ForeignKey(
+        'Person',  # هر حساب به یک شخص از مدل Person متصل است
+        on_delete=models.CASCADE,  # با حذف شخص، حساب او هم حذف می‌شود
+        related_name='user_accounts',  # دسترسی از شخص به حساب‌هایش: person.user_accounts
+        verbose_name='شخص'
+    )
+
+    role = models.ForeignKey(
+        'Role',  # نقش این حساب را مشخص می‌کند؛ مثلاً دانشجو یا مدیر
+        on_delete=models.PROTECT,  # تا وقتی حسابی از این نقش استفاده می‌کند، حذف نقش ممنوع است
+        related_name='user_accounts',  # دسترسی از نقش به حساب‌های دارای آن نقش
+        verbose_name='نقش'
+    )
+
+    username = models.CharField(
+        max_length=150,  # حداکثر طول نام کاربری
+        unique=True,  # هر نام کاربری باید یکتا باشد
+        verbose_name='نام کاربری'
+    )
+
+    password = models.CharField(
+        max_length=128,  # طول فیلد ذخیرهٔ رمز هش‌شده
+        verbose_name='رمز عبور'
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True,  # زمان ایجاد حساب را خودکار ذخیره می‌کند
+        verbose_name='تاریخ ثبت'
+    )
+
+    is_active = models.BooleanField(
+        default=True,  # حساب به‌صورت پیش‌فرض فعال است
+        verbose_name='فعال'
+    )
+
+    failed_login_count = models.PositiveIntegerField(
+        default=0,  # تعداد تلاش‌های ناموفق؛ عدد منفی نمی‌پذیرد
+        verbose_name='تعداد تلاش ناموفق'
+    )
+
+    locked_until = models.DateTimeField(
+        null=True,  # در دیتابیس می‌تواند خالی باشد
+        blank=True,  # در فرم‌های Django هم اختیاری است
+        verbose_name='قفل تا'
+    )
+
+    last_login_at = models.DateTimeField(
+        null=True,  # ممکن است کاربر هنوز وارد نشده باشد
+        blank=True,
+        verbose_name='آخرین ورود'
+    )
+
+    last_activity_at = models.DateTimeField(
+        null=True,  # ممکن است هنوز فعالیتی ثبت نشده باشد
+        blank=True,
+        verbose_name='آخرین فعالیت'
+    )
+
+    password_changed_at = models.DateTimeField(
+        null=True,  # ممکن است زمان تغییر رمز هنوز ثبت نشده باشد
+        blank=True,
+        verbose_name='تاریخ تغییر رمز'
+    )
+
+    def __str__(self):
+        return self.username  # هنگام نمایش حساب، نام کاربری را نشان می‌دهد
 
 
 # دانشکده
@@ -334,8 +405,29 @@ class GradeAppeal(models.Model):
 
 
 # حضور و غیاب
-class Attendance(models.Model):
-    pass
+class Attendance(models.Model):  # مدل ثبت اطلاعات حضور و غیاب
+
+    enrollment = models.ForeignKey(  # ارتباط این رکورد با ثبت‌نام هنرجو
+        'Enrollment',  # نام مدل ثبت‌نام
+        on_delete=models.CASCADE  # با حذف ثبت‌نام، رکورد حضور و غیاب هم حذف می‌شود
+    )
+
+    session_number = models.IntegerField()  # شمارهٔ جلسه
+
+    session_date = models.DateField()  # تاریخ برگزاری جلسه
+
+    attendance_status = models.CharField(max_length=50)  # وضعیت حضور، مثل حاضر یا غایب
+
+    attendance_time = models.TimeField()  # ساعت حضور یا ثبت وضعیت
+
+    description = models.TextField()  # توضیحات تکمیلی
+
+    recorded_by = models.ForeignKey(  # ارتباط با حساب کاربری ثبت‌کننده
+        'UserAccount',  # نام مدل حساب کاربری
+        on_delete=models.CASCADE  # با حذف حساب کاربری، این رکورد هم حذف می‌شود
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)  # زمان ایجاد رکورد که خودکار ثبت می‌شود
 
 
 # تیکت
